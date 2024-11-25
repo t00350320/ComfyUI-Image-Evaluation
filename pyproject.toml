@@ -1,0 +1,14 @@
+[project]
+name = "comfyui-image-evaluation"
+description = "An extension to ComfyUI that evaluates images using multiple models."
+version = "1.0.0"
+license = "MIT"
+
+[project.urls]
+Repository = "https://github.com/wu12023/ComfyUI-Image-Evaluation"
+#  Used by Comfy Registry https://comfyregistry.org
+
+[tool.comfy]
+PublisherId = "wu12023"
+DisplayName = "ComfyUI-Image-Evaluation"
+Icon = ""
