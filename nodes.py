@@ -7,6 +7,7 @@ import torch
 import numpy as np
 from torch.nn import functional as F
 import comfy
+
 class Clip_Score:
     @classmethod
     def INPUT_TYPES(s):
