@@ -15,4 +15,4 @@ This node allows you to evaluate the Clip Score between two images or a image an
 
 ## Author
 - David Fischer
-- GitHub: [theUpsider](https://github.com/theUpsider)
+- GitHub: [wu12023](https://github.com/wu12023)
