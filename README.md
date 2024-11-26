@@ -8,6 +8,7 @@ This node allows you to evaluate the Clip Score between two images or a image an
 - Clone this repository into the `custom_nodes` folder of ComfyUI. Restart ComfyUI and the extension should be loaded.
 
 ## Features
+![Alt text](images/clip_score.png)
 - **Clip Text Score**: Evaluate the Clip Score between two images or a image and a text prompt using the CLIP model.
 - **Clip Image Score**: Evaluate the Clip Score between a image and a target image using the CLIP model.
 
