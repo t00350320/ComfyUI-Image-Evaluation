@@ -14,7 +14,7 @@ class Clip_Score:
     def INPUT_TYPES(s):
         return {
             "required": {"Source_Image": ("IMAGE", ),
-                        "Clip_Model": (["openai/clip-vit-base-patch16", "openai/clip-vit-large-patch14"],),
+                        "Clip_Model": (["openai/clip-vit-large-patch14", "openai/clip-vit-base-patch16", "openai/clip-vit-base-patch32"], ),
             },
             "optional": {"Target_Image": ("IMAGE", ),
                         "Target_Prompt": ("STRING", ),
