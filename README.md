@@ -13,7 +13,7 @@ cd ComfyUI-Image-Evaluation
 ```
 pip install -r requirements.txt
 ```
--Restart ComfyUI and the extension should be loaded.
+- Restart ComfyUI and the extension should be loaded.
 
 ## Features
 ![Alt text](images/clip_score.png)
