@@ -5,7 +5,15 @@ This repository contains an extension to [ComfyUI](https://github.com/comfyanony
 This node allows you to evaluate the Clip Score between two images or a image and a text prompt using the CLIP model.
 
 ## Installation
-- Clone this repository into the `custom_nodes` folder of ComfyUI. Restart ComfyUI and the extension should be loaded.
+- Clone this repository into the `custom_nodes` folder of ComfyUI. 
+```
+cd ComfyUI-Image-Evaluation
+```
+- Install the requirements.
+```
+pip install -r requirements.txt
+```
+-Restart ComfyUI and the extension should be loaded.
 
 ## Features
 ![Alt text](images/clip_score.png)
