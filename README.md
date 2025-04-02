@@ -20,7 +20,8 @@ pip install -r requirements.txt
 - **Clip Text Score**: Evaluate the Clip Score between two images or a image and a text prompt using the CLIP model.
 - **Clip Image Score**: Evaluate the Clip Score between a image and a target image using the CLIP model.
 - **Dino Score**: Evaluate the DINO Score between two images using the DINO model.
-
+- **Preload Clip model**
+- **Multi text similarity score**
 ## Nodes
 
 ## Author
