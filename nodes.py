@@ -8,6 +8,34 @@ import numpy as np
 from torch.nn import functional as F
 import comfy
 
+
+class Loader:
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "Clip_Model": (["openai/clip-vit-large-patch14", "openai/clip-vit-base-patch16", "openai/clip-vit-base-patch32"], ),
+                "Device": (("cuda", "cpu"),),
+                #"dtype": (("float16", "bfloat16", "float32"),),
+            },
+        }
+
+    CATEGORY = "Image_Evaluation"
+    FUNCTION = "prepare_model"
+    RETURN_NAMES = ("MODEL","METRIC", "PROCESSOR")
+    RETURN_TYPES = ("CLIP_MODEL", "CLIP_METRIC","CLIP_PROCESSOR")
+    '''
+    def load(self, model, device, dtype):
+        dtype = torch.float32 if device == "cpu" else getattr(torch, dtype)
+        model, preprocess = clip.load(model, device=device)
+        return (model, preprocess)
+    '''
+    def prepare_model(self, Clip_Model, Device):
+        clip_model = CLIPModel.from_pretrained(Clip_Model).to(Device)
+        clip_metric = CLIPScore(model_name_or_path=Clip_Model).to(Device)
+        clip_processor = CLIPProcessor.from_pretrained(Clip_Model)
+        return (clip_model, clip_metric, clip_processor)
+
 class Dino_Score:
     @classmethod
     def INPUT_TYPES(s):
@@ -74,6 +102,11 @@ class Clip_Score:
             },
             "optional": {"Target_Image": ("IMAGE", ),
                         "Target_Prompt": ("STRING", ),
+                        "Target_Prompt_List": ("STRING", ),
+                        "Preload_model": ("INT",),
+                        "Clip_model": ("CLIP_MODEL",),
+                        "Clip_metric": ("CLIP_METRIC",),
+                        "Clip_processor": ("CLIP_PROCESSOR",),
             },
         }
 
@@ -120,26 +153,45 @@ class Clip_Score:
         score = clip_metric(image, ref_text).item()
         return str(score)
     
-    def execute(self, Source_Image, Clip_Model, Target_Image=None, Target_Prompt=None):
+    def execute(self, Source_Image, Clip_Model, Target_Image=None, Target_Prompt=None,Target_Prompt_List=None,Preload_model=0,Clip_model=None,Clip_metric=None,Clip_processor=None):
         clip_text_score = 0
         clip_image_score = 0
         Device = comfy.model_management.get_torch_device()
         Source_Image = Source_Image.to(Device)
+        score_list = []
         if Target_Image is not None:
             Target_Image = Target_Image.to(Device)
         Source_Image = self.tensor_to_image(Source_Image)
-        clip_model, clip_metric, clip_processor = self.prepare_model(Clip_Model, Device)
+
+        if Preload_model == 0:
+          print("local clip model")
+          clip_model, clip_metric, clip_processor = self.prepare_model(Clip_Model, Device)
+        else:
+          print("prelod clip model")
+          clip_model, clip_metric, clip_processor = Clip_model,Clip_metric,Clip_processor
         if Target_Image is not None and Target_Prompt is not None:
             Target_Image = self.tensor_to_image(Target_Image)
             clip_text_score = self.get_clip_text_score(image=Source_Image, ref_text=Target_Prompt, clip_metric=clip_metric, Device=Device)
-            clip_image_score = self.get_clip_image_score(image=Source_Image, target_image=Target_Image, clip_model=clip_model, clip_processor=clip_processor, Device=Device)
+            clip_image_score = self.get_clip_image_score(image=Source_Image, target_image=Target_Image, clip_Target_Prompt_Listmodel=clip_model, clip_processor=clip_processor, Device=Device)
             return (clip_text_score, clip_image_score)
-        elif len(Target_Prompt) == 0:
+        elif len(Target_Prompt) == 0 and len(Target_Prompt_List) == 0:
             clip_image_score = self.get_clip_image_score(image=Source_Image, target_image=Target_Image, clip_model=clip_model, clip_processor=clip_processor, Device=Device)
             return ("None", clip_image_score)
         elif Target_Image is None:
-            clip_text_score = self.get_clip_text_score(image=Source_Image, ref_text=Target_Prompt, clip_metric=clip_metric, Device=Device)
-            return (clip_text_score, "None")
+            if len(Target_Prompt) > 0:
+                clip_text_score = self.get_clip_text_score(image=Source_Image, ref_text=Target_Prompt, clip_metric=clip_metric, Device=Device)
+                return (clip_text_score, "None")
+            elif len(Target_Prompt_List) > 0:
+                s = Target_Prompt_List
+                # 按分号分割字符串，生成列表
+                parts = s.split(';')
+
+                 # 遍历每个分割后的子串
+                for item in parts:
+                  print("score item:",item)
+                  clip_text_score = self.get_clip_text_score(image=Source_Image, ref_text=item, clip_metric=clip_metric, Device=Device)
+                  score_list.append(clip_text_score)
+                return (score_list, "None")
         else:
             return ("None", "None")
 
@@ -148,11 +200,13 @@ class Clip_Score:
 NODE_CLASS_MAPPINGS = {
     "Clip_Score-🔬": Clip_Score,
     "Dino_Score-🔬": Dino_Score,
+    "ClipScoreLoader": Loader,
 }
 
 # A dictionary that contains the friendly/humanly readable titles for the nodes
 NODE_DISPLAY_NAME_MAPPINGS = {
     "Clip_Score-🔬": "Clip_Score",
     "Dino_Score-🔬": "Dino_Score",
+    "ClipScoreLoader": "Loader",
 }
 
