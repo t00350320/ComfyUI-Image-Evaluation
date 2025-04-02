@@ -22,6 +22,8 @@ pip install -r requirements.txt
 - **Dino Score**: Evaluate the DINO Score between two images using the DINO model.
 - **Preload Clip model**
 - **Multi text similarity score**
+  ![F65C481D-7652-4D31-BC44-8236035FE3A2](https://github.com/user-attachments/assets/4adcdbff-be3c-47e1-9846-c8ab49a1ed00)
+
 ## Nodes
 
 ## Author
